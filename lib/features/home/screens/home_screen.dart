@@ -305,14 +305,15 @@ class _HomeScreenState extends State<HomeScreen> {
                       profileController.modulePermission != null ? Get.find<ProfileController>().modulePermission!.order! ? Column(children: [
 
                         Row(children: [
-                          Text('ongoing_orders'.tr, style: robotoBold.copyWith(fontSize: Dimensions.fontSizeLarge)),
-                          const Spacer(),
+                          Expanded(
+                            child: Text('ongoing_orders'.tr, style: robotoBold.copyWith(fontSize: Dimensions.fontSizeLarge)),
+                          ),
 
                           orderController.runningOrders != null ? Padding(
                             padding: const EdgeInsets.only(top: Dimensions.paddingSizeDefault, bottom: Dimensions.paddingSizeSmall),
                             child: InkWell(
                               onTap: () => orderController.toggleCampaignOnly(),
-                              child: Row(children: [
+                              child: Row(mainAxisSize: MainAxisSize.min, children: [
                                 SizedBox(
                                   height: 24, width: 24,
                                   child: Checkbox(
@@ -324,9 +325,13 @@ class _HomeScreenState extends State<HomeScreen> {
                                 ),
                                 const SizedBox(width: Dimensions.paddingSizeSmall),
 
-                                Text(
-                                  'campaign_orders_only'.tr,
-                                  style: robotoRegular.copyWith(fontSize: Dimensions.fontSizeSmall, color: Theme.of(context).disabledColor),
+                                Flexible(
+                                  child: Text(
+                                    'campaign_orders_only'.tr,
+                                    style: robotoRegular.copyWith(fontSize: Dimensions.fontSizeSmall, color: Theme.of(context).disabledColor),
+                                    maxLines: 1,
+                                    overflow: TextOverflow.ellipsis,
+                                  ),
                                 ),
                               ]),
                             ),

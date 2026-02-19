@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:io';
 import 'dart:math';
 import 'package:sixam_mart_store/common/models/config_model.dart';
 import 'package:sixam_mart_store/common/models/vat_tax_model.dart';
@@ -27,9 +28,12 @@ import 'package:sixam_mart_store/features/rental_module/profile/controllers/taxi
 import 'package:sixam_mart_store/helper/route_helper.dart';
 import 'package:sixam_mart_store/util/app_constants.dart';
 import 'package:sixam_mart_store/common/widgets/custom_snackbar_widget.dart';
+import 'package:sixam_mart_store/helper/image_size_checker.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:flutter_image_compress/flutter_image_compress.dart';
+import 'package:path/path.dart' as path;
 import 'package:sixam_mart_store/features/store/domain/services/store_service_interface.dart';
 
 class StoreController extends GetxController implements GetxService {
@@ -653,12 +657,72 @@ class StoreController extends GetxController implements GetxService {
     update();
   }
 
+  Future<XFile?> _compressImageIfNeeded(XFile imageFile) async {
+    double imageSize = await ImageSize.getImageSizeFromXFile(imageFile);
+    
+    // Si l'image dépasse 2 Mo, on la compresse pour qu'elle soit ≤ 2 Mo
+    if (imageSize > 2.0) {
+      try {
+        // Compression progressive jusqu'à obtenir ≤ 2 Mo
+        int quality = 85;
+        XFile? compressedFile;
+        
+        while (quality >= 30) {
+          DateTime time = DateTime.now();
+          final String targetPath = path.join(Directory.systemTemp.path, 'compressed-${time.millisecondsSinceEpoch}-q$quality.jpg');
+          
+          compressedFile = await FlutterImageCompress.compressAndGetFile(
+            imageFile.path,
+            targetPath,
+            quality: quality,
+            format: CompressFormat.jpeg,
+            minHeight: 800,
+            minWidth: 800,
+          );
+          
+          if (compressedFile != null) {
+            double compressedSize = await ImageSize.getImageSizeFromXFile(compressedFile);
+            if (compressedSize <= 2.0) {
+              return compressedFile;
+            }
+          }
+          
+          quality -= 15;
+        }
+        
+        // Si même avec qualité 30 on dépasse 2 Mo, retourner la version la plus compressée
+        return compressedFile ?? imageFile;
+      } catch (e) {
+        debugPrint('Erreur lors de la compression: $e');
+        return imageFile;
+      }
+    }
+    
+    return imageFile;
+  }
+
   void pickImage(bool isLogo, bool isRemove) async {
     if(isRemove) {
       _rawLogo = null;
       _rawCover = null;
     }else {
-      isLogo ? _rawLogo = await storeServiceInterface.pickImageFromGallery() : _rawCover = await storeServiceInterface.pickImageFromGallery();
+      XFile? pickedFile = await storeServiceInterface.pickImageFromGallery();
+      if(pickedFile != null) {
+        // Vérifier la taille (max 5 Mo pour l'upload)
+        double imageSize = await ImageSize.getImageSizeFromXFile(pickedFile);
+        if(imageSize > 5.0) {
+          showCustomSnackBar('image_size_greater_than_5mb'.tr);
+          return;
+        }
+        
+        // Compresser si > 2 Mo
+        XFile? processedFile = await _compressImageIfNeeded(pickedFile);
+        if(isLogo) {
+          _rawLogo = processedFile;
+        } else {
+          _rawCover = processedFile;
+        }
+      }
       update();
     }
   }
@@ -996,7 +1060,18 @@ class StoreController extends GetxController implements GetxService {
   void pickImages() async {
     XFile? xFile = await ImagePicker().pickImage(source: ImageSource.gallery);
     if(xFile != null) {
-      _rawImages.add(xFile);
+      // Vérifier la taille (max 5 Mo pour l'upload)
+      double imageSize = await ImageSize.getImageSizeFromXFile(xFile);
+      if(imageSize > 5.0) {
+        showCustomSnackBar('image_size_greater_than_5mb'.tr);
+        return;
+      }
+      
+      // Compresser si > 2 Mo
+      XFile? processedFile = await _compressImageIfNeeded(xFile);
+      if(processedFile != null) {
+        _rawImages.add(processedFile);
+      }
     }
     update();
   }

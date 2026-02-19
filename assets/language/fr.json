@@ -1335,7 +1335,7 @@
   "options_selection_type": "Type de sélection",
   "single_selection": "Sélection unique",
   "multi_selection": "Sélection multiple",
-  "thumbnail_image_format": "JPG, PNG, JPEG – max 2 Mo",
+  "thumbnail_image_format": "JPG, PNG, JPEG – max 5 Mo",
   "update_addon": "Mettre à jour l’option",
   "add_addons": "Ajouter des options",
   "min_selection": "Sélection minimum",

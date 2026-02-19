@@ -117,35 +117,86 @@ class MenuScreen extends StatelessWidget {
     menuList.add(MenuModel(icon: Images.terms, title: 'terms_condition'.tr, route: RouteHelper.getTermsRoute()));
     menuList.add(MenuModel(icon: Images.logOut, title: 'logout'.tr, route: ''));
 
-    return Container(
-      padding: const EdgeInsets.all(Dimensions.paddingSizeDefault),
-      decoration: BoxDecoration(
-        borderRadius: const BorderRadius.vertical(top: Radius.circular(Dimensions.radiusExtraLarge)),
-        color: Theme.of(context).cardColor,
-      ),
-      child: Column(mainAxisSize: MainAxisSize.min, children: [
-
-        InkWell(
-          onTap: () => Get.back(),
-          child: const Icon(Icons.keyboard_arrow_down_rounded, size: 30),
-        ),
-        const SizedBox(height: Dimensions.paddingSizeExtraSmall),
-
-        GridView.builder(
-          physics: const NeverScrollableScrollPhysics(),
-          shrinkWrap: true,
-          gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-            crossAxisCount: 4, childAspectRatio: ResponsiveHelper.isTab(context) ? 1/1.5 : (1/1.22),
-            crossAxisSpacing: Dimensions.paddingSizeExtraSmall, mainAxisSpacing: Dimensions.paddingSizeExtraSmall,
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        // Calculer le nombre de lignes nécessaires
+        int crossAxisCount = 4;
+        int rowCount = (menuList.length / crossAxisCount).ceil();
+        
+        // Calculer la largeur disponible pour le GridView
+        double availableWidth = constraints.maxWidth - (Dimensions.paddingSizeDefault * 2);
+        double cellWidth = (availableWidth - (Dimensions.paddingSizeExtraSmall * (crossAxisCount - 1))) / crossAxisCount;
+        
+        // Calculer la hauteur réelle nécessaire pour chaque cellule basée sur MenuButtonWidget
+        // Dans MenuButtonWidget: size = (context.width/4)-Dimensions.paddingSizeDefault
+        // Mais ici cellWidth est déjà calculé différemment, donc on utilise directement cellWidth
+        double buttonSize = cellWidth; // Taille de base du bouton
+        double iconContainerHeight = buttonSize - (buttonSize * 0.2); // height: size-(size*0.2)
+        double iconPadding = Dimensions.paddingSizeDefault * 2; // padding all autour de l'icon
+        double iconMargin = Dimensions.paddingSizeSmall * 2; // margin horizontal du Container
+        double textSpacing = Dimensions.paddingSizeExtraSmall; // SizedBox entre icon et text
+        double textHeight = (Dimensions.fontSizeSmall * 1.5) * 2; // 2 lignes max avec line height 1.5
+        double totalCellHeight = iconContainerHeight + iconPadding + iconMargin + textSpacing + textHeight;
+        
+        // Utiliser un childAspectRatio qui laisse assez d'espace pour éviter les débordements
+        double childAspectRatio = cellWidth / totalCellHeight;
+        
+        // Calculer la hauteur totale du GridView avec une marge de sécurité pour éviter les 0.405 pixels
+        double gridViewHeight = (totalCellHeight * rowCount) + (Dimensions.paddingSizeExtraSmall * (rowCount - 1)) + 3.0;
+        
+        // Hauteur totale du contenu
+        double headerHeight = 30 + Dimensions.paddingSizeExtraSmall; // Icon + SizedBox
+        double bottomPadding = Dimensions.paddingSizeSmall;
+        double totalHeight = headerHeight + gridViewHeight + bottomPadding;
+        
+        return Container(
+          constraints: BoxConstraints(
+            maxHeight: MediaQuery.of(context).size.height * 0.9,
           ),
-          itemCount: menuList.length,
-          itemBuilder: (context, index) {
-            return MenuButtonWidget(menu: menuList[index], isProfile: index == 0, isLogout: index == menuList.length-1);
-          },
-        ),
-        const SizedBox(height: Dimensions.paddingSizeSmall),
+          padding: const EdgeInsets.all(Dimensions.paddingSizeDefault),
+          decoration: BoxDecoration(
+            borderRadius: const BorderRadius.vertical(top: Radius.circular(Dimensions.radiusExtraLarge)),
+            color: Theme.of(context).cardColor,
+          ),
+          child: SingleChildScrollView(
+            child: ConstrainedBox(
+              constraints: BoxConstraints(
+                minHeight: constraints.maxHeight == double.infinity ? totalHeight : 0,
+              ),
+              child: IntrinsicHeight(
+                child: Column(mainAxisSize: MainAxisSize.min, children: [
 
-      ]),
+                  InkWell(
+                    onTap: () => Get.back(),
+                    child: const Icon(Icons.keyboard_arrow_down_rounded, size: 30),
+                  ),
+                  const SizedBox(height: Dimensions.paddingSizeExtraSmall),
+
+                  SizedBox(
+                    height: gridViewHeight,
+                    child: GridView.builder(
+                      physics: const NeverScrollableScrollPhysics(),
+                      shrinkWrap: false,
+                      gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                        crossAxisCount: crossAxisCount,
+                        childAspectRatio: childAspectRatio,
+                        crossAxisSpacing: Dimensions.paddingSizeExtraSmall,
+                        mainAxisSpacing: Dimensions.paddingSizeExtraSmall,
+                      ),
+                      itemCount: menuList.length,
+                      itemBuilder: (context, index) {
+                        return MenuButtonWidget(menu: menuList[index], isProfile: index == 0, isLogout: index == menuList.length-1);
+                      },
+                    ),
+                  ),
+                  const SizedBox(height: Dimensions.paddingSizeSmall),
+
+                ]),
+              ),
+            ),
+          ),
+        );
+      },
     );
   }
 }

@@ -66,6 +66,7 @@ class _AddItemScreenState extends State<AddItemScreen> with TickerProviderStateM
 
   late bool _update;
   late Item _item;
+  bool _hasDiscount = false;
 
   final Module? _module = Get.find<SplashController>().configModel!.moduleConfig!.module;
   final isPharmacy = Get.find<ProfileController>().profileModel!.stores![0].module!.moduleType == 'pharmacy';
@@ -93,7 +94,16 @@ class _AddItemScreenState extends State<AddItemScreen> with TickerProviderStateM
     }
     storeController.clearVatTax();
 
-    _tabController = TabController(length: _languageList!.length, vsync: this);
+    // Trouver l'index de la langue française pour l'onglet par défaut
+    int frenchIndex = 0;
+    for(int i = 0; i < _languageList!.length; i++) {
+      if(_languageList[i].key == 'fr') {
+        frenchIndex = i;
+        break;
+      }
+    }
+    
+    _tabController = TabController(length: _languageList.length, vsync: this, initialIndex: frenchIndex);
     _tabs.addAll(_languageList.map((lang) => Tab(text: lang.value)));
 
     for(int index = 0; index < _languageList.length; index++) {
@@ -130,7 +140,12 @@ class _AddItemScreenState extends State<AddItemScreen> with TickerProviderStateM
         }
       }
       _priceController.text = _item.price.toString();
-      _discountController.text = _item.discount.toString();
+      _hasDiscount = (_item.discount ?? 0) > 0;
+      if(_hasDiscount) {
+        _discountController.text = _item.discount.toString();
+      } else {
+        _discountController.clear();
+      }
       _stockController.text = _item.stock.toString();
       _maxOrderQuantityController.text = _item.maxOrderQuantity.toString();
       _genericNameSuggestionController.text = (_item.genericName != null && _item.genericName!.isNotEmpty) ? _item.genericName![0]! : '';
@@ -152,6 +167,8 @@ class _AddItemScreenState extends State<AddItemScreen> with TickerProviderStateM
       }
     }else {
       _item = Item(imagesFullUrl: []);
+      _hasDiscount = false;
+      _discountController.clear();
       storeController.setTag('', isUpdate: false, isClear: true);
       storeController.setEmptyVariationList();
       storeController.pickImage(false, true);
@@ -166,6 +183,9 @@ class _AddItemScreenState extends State<AddItemScreen> with TickerProviderStateM
   }
 
   void _validateDiscount() {
+    if(!_hasDiscount) {
+      return;
+    }
     double price = double.tryParse(_priceController.text) ?? 0.0;
     double discount = double.tryParse(_discountController.text) ?? 0.0;
 
@@ -387,9 +407,6 @@ class _AddItemScreenState extends State<AddItemScreen> with TickerProviderStateM
                           padding: EdgeInsets.only(bottom: Dimensions.paddingSizeLarge),
                           child: Divider(height: 0),
                         ),
-
-                        Text('insert_language_wise_item_name_and_description'.tr, style: robotoRegular.copyWith(fontSize: Dimensions.fontSizeSmall, color: Theme.of(context).disabledColor)),
-                        const SizedBox(height: Dimensions.paddingSizeDefault),
 
                         CustomTextFieldWidget(
                           hintText: 'name'.tr,
@@ -1150,62 +1167,94 @@ class _AddItemScreenState extends State<AddItemScreen> with TickerProviderStateM
                           labelText: 'price'.tr,
                           controller: _priceController,
                           focusNode: _priceNode,
-                          nextFocus: _discountNode,
+                          nextFocus: _hasDiscount ? _discountNode : null,
                           isAmount: true,
                         ),
                         const SizedBox(height: Dimensions.paddingSizeExtraLarge),
 
-                        Row(children: [
-                          Expanded(
-                            child: Container(
-                              decoration: BoxDecoration(
-                                borderRadius: BorderRadius.circular(Dimensions.radiusDefault),
-                                color: Theme.of(context).cardColor,
-                                border: Border.all(color: Theme.of(context).disabledColor.withValues(alpha: 0.5)),
+                        InkWell(
+                          onTap: () {
+                            setState(() {
+                              _hasDiscount = !_hasDiscount;
+                              if(!_hasDiscount) {
+                                _discountController.clear();
+                              }
+                            });
+                          },
+                          child: Row(children: [
+                            Checkbox(
+                              activeColor: Theme.of(context).primaryColor,
+                              value: _hasDiscount,
+                              onChanged: (value) {
+                                setState(() {
+                                  _hasDiscount = value ?? false;
+                                  if(!_hasDiscount) {
+                                    _discountController.clear();
+                                  }
+                                });
+                              },
+                            ),
+                            Expanded(
+                              child: Text(
+                                '${'discount'.tr} (${'optional'.tr})',
+                                style: robotoMedium,
                               ),
-                              child: CustomDropdown(
-                                onChange: (int? value, int index) {
-                                  storeController.setDiscountTypeIndex(value!, true);
-                                  _validateDiscount();
-                                },
-                                dropdownButtonStyle: DropdownButtonStyle(
-                                  height: 45,
-                                  padding: const EdgeInsets.symmetric(
-                                    vertical: Dimensions.paddingSizeExtraSmall,
-                                    horizontal: Dimensions.paddingSizeExtraSmall,
-                                  ),
-                                  primaryColor: Theme.of(context).textTheme.bodyLarge!.color,
-                                ),
-                                iconColor: Theme.of(context).disabledColor,
-                                dropdownStyle: DropdownStyle(
-                                  elevation: 10,
+                            ),
+                          ]),
+                        ),
+                        if(_hasDiscount) ...[
+                          const SizedBox(height: Dimensions.paddingSizeSmall),
+                          Row(children: [
+                            Expanded(
+                              child: Container(
+                                decoration: BoxDecoration(
                                   borderRadius: BorderRadius.circular(Dimensions.radiusDefault),
-                                  padding: const EdgeInsets.all(Dimensions.paddingSizeExtraSmall),
+                                  color: Theme.of(context).cardColor,
+                                  border: Border.all(color: Theme.of(context).disabledColor.withValues(alpha: 0.5)),
                                 ),
-                                items: discountTypeList,
-                                child: Padding(
-                                  padding: const EdgeInsets.only(left: 8),
-                                  child: Text(
-                                    widget.item != null ? storeController.discountTypeList[storeController.discountTypeIndex]!.tr : 'discount_type'.tr,
-                                    style: robotoRegular.copyWith(color: Theme.of(context).disabledColor, fontSize: Dimensions.fontSizeLarge),
+                                child: CustomDropdown(
+                                  onChange: (int? value, int index) {
+                                    storeController.setDiscountTypeIndex(value!, true);
+                                    _validateDiscount();
+                                  },
+                                  dropdownButtonStyle: DropdownButtonStyle(
+                                    height: 45,
+                                    padding: const EdgeInsets.symmetric(
+                                      vertical: Dimensions.paddingSizeExtraSmall,
+                                      horizontal: Dimensions.paddingSizeExtraSmall,
+                                    ),
+                                    primaryColor: Theme.of(context).textTheme.bodyLarge!.color,
+                                  ),
+                                  iconColor: Theme.of(context).disabledColor,
+                                  dropdownStyle: DropdownStyle(
+                                    elevation: 10,
+                                    borderRadius: BorderRadius.circular(Dimensions.radiusDefault),
+                                    padding: const EdgeInsets.all(Dimensions.paddingSizeExtraSmall),
+                                  ),
+                                  items: discountTypeList,
+                                  child: Padding(
+                                    padding: const EdgeInsets.only(left: 8),
+                                    child: Text(
+                                      widget.item != null ? storeController.discountTypeList[storeController.discountTypeIndex]!.tr : 'discount_type'.tr,
+                                      style: robotoRegular.copyWith(color: Theme.of(context).disabledColor, fontSize: Dimensions.fontSizeLarge),
+                                    ),
                                   ),
                                 ),
                               ),
                             ),
-                          ),
-                          const SizedBox(width: Dimensions.paddingSizeDefault),
-
-                          Expanded(
-                            child: CustomTextFieldWidget(
-                              hintText: 'discount'.tr,
-                              labelText: 'discount'.tr,
-                              controller: _discountController,
-                              focusNode: _discountNode,
-                              isAmount: true,
-                              onChanged: (value) => _validateDiscount(),
+                            const SizedBox(width: Dimensions.paddingSizeDefault),
+                            Expanded(
+                              child: CustomTextFieldWidget(
+                                hintText: 'discount'.tr,
+                                labelText: 'discount'.tr,
+                                controller: _discountController,
+                                focusNode: _discountNode,
+                                isAmount: true,
+                                onChanged: (value) => _validateDiscount(),
+                              ),
                             ),
-                          ),
-                        ]),
+                          ]),
+                        ],
                         const SizedBox(height: Dimensions.paddingSizeExtraLarge),
 
                         CustomTextFieldWidget(
@@ -1571,7 +1620,7 @@ class _AddItemScreenState extends State<AddItemScreen> with TickerProviderStateM
                       const SizedBox(width: Dimensions.paddingSizeSmall),
 
                       Text(
-                        '(${'max_size_2_mb'.tr})',
+                        '(${'max_size_5_mb'.tr})',
                         style: robotoRegular.copyWith(fontSize: Dimensions.fontSizeExtraSmall, color: Theme.of(context).colorScheme.error),
                       ),
                     ]),
@@ -1694,6 +1743,8 @@ class _AddItemScreenState extends State<AddItemScreen> with TickerProviderStateM
                     onPressed: () {
                       String price = _priceController.text.trim();
                       String discount = _discountController.text.trim();
+                      final bool hasDiscount = _hasDiscount && discount.isNotEmpty && (double.tryParse(discount) ?? 0) > 0;
+                      final double discountValue = hasDiscount ? (double.tryParse(discount) ?? 0) : 0;
                       int maxOrderQuantity = _maxOrderQuantityController.text.isNotEmpty ? int.parse(_maxOrderQuantityController.text) : 0;
                       bool haveBlankVariant = false;
                       bool blankVariantPrice = false;
@@ -1751,7 +1802,7 @@ class _AddItemScreenState extends State<AddItemScreen> with TickerProviderStateM
 
                       bool defaultDataNull = false;
                       for(int index=0; index<_languageList.length; index++) {
-                        if(_languageList[index].key == 'en') {
+                        if(_languageList[index].key == 'fr') {
                           if (_nameControllerList[index].text.trim().isEmpty || _descriptionControllerList[index].text.trim().isEmpty) {
                             defaultDataNull = true;
                           }
@@ -1760,10 +1811,9 @@ class _AddItemScreenState extends State<AddItemScreen> with TickerProviderStateM
                       }
 
                       bool checkDiscountWithVariationPrice = false;
-                      if(storeController.discountTypeIndex == 1 && storeController.variantTypeList!.isNotEmpty) {
+                      if(hasDiscount && storeController.discountTypeIndex == 1 && storeController.variantTypeList!.isNotEmpty) {
                         for(VariantTypeModel variantType in storeController.variantTypeList!) {
                           double variantPrice = double.parse(variantType.priceController.text);
-                          double discountValue = double.parse(discount);
                           if(variantPrice < discountValue) {
                             checkDiscountWithVariationPrice = true;
                             break;
@@ -1777,8 +1827,6 @@ class _AddItemScreenState extends State<AddItemScreen> with TickerProviderStateM
                         showCustomSnackBar('select_a_category'.tr);
                       }else if(price.isEmpty) {
                         showCustomSnackBar('enter_item_price'.tr);
-                      }else if(discount.isEmpty) {
-                        showCustomSnackBar('enter_item_discount'.tr);
                       }else if(haveBlankVariant) {
                         showCustomSnackBar('add_at_least_one_variant_for_every_attribute'.tr);
                       }else if(blankVariantPrice) {
@@ -1823,7 +1871,7 @@ class _AddItemScreenState extends State<AddItemScreen> with TickerProviderStateM
                         _item.isHalal = storeController.isHalal ? 1 : 0;
                         _item.isBasicMedicine = storeController.isBasicMedicine ? 1 : 0;
                         _item.price = double.parse(price);
-                        _item.discount = double.parse(discount);
+                        _item.discount = discountValue;
                         _item.discountType = storeController.discountTypeIndex == 0 ? 'percent' : 'amount';
                         _item.availableTimeStarts = storeController.availableTimeStarts;
                         _item.availableTimeEnds = storeController.availableTimeEnds;

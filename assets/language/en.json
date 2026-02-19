@@ -1335,7 +1335,7 @@
   "options_selection_type" : "Options Selection Type",
   "single_selection" : "Single Selection",
   "multi_selection" : "Multi Selection",
-  "thumbnail_image_format" : "Upload jpg, png, jpeg, \nmaximum 2 MB",
+  "thumbnail_image_format" : "Upload jpg, png, jpeg, \nmaximum 5 MB",
   "update_addon" : "Update Addon",
   "add_addons" : "Add Addons",
   "min_selection" : "Min Selection",
