@@ -78,6 +78,7 @@ class _AddItemScreenState extends State<AddItemScreen> with TickerProviderStateM
   final List<Language>? _languageList = Get.find<SplashController>().configModel!.language;
   TabController? _tabController;
   final List<Tab> _tabs =[];
+  int _defaultLanguageIndex = 0;
 
   @override
   void initState() {
@@ -94,7 +95,7 @@ class _AddItemScreenState extends State<AddItemScreen> with TickerProviderStateM
     }
     storeController.clearVatTax();
 
-    // Trouver l'index de la langue française pour l'onglet par défaut
+    // Trouver l'index de la langue française pour l'onglet et la langue par défaut
     int frenchIndex = 0;
     for(int i = 0; i < _languageList!.length; i++) {
       if(_languageList[i].key == 'fr') {
@@ -102,7 +103,8 @@ class _AddItemScreenState extends State<AddItemScreen> with TickerProviderStateM
         break;
       }
     }
-    
+    _defaultLanguageIndex = frenchIndex;
+
     _tabController = TabController(length: _languageList.length, vsync: this, initialIndex: frenchIndex);
     _tabs.addAll(_languageList.map((lang) => Tab(text: lang.value)));
 
@@ -1902,13 +1904,22 @@ class _AddItemScreenState extends State<AddItemScreen> with TickerProviderStateM
 
                         List<Translation> translations = [];
                         for(int index = 0; index < _languageList.length; index++) {
+                          final String fallbackName = _nameControllerList[_defaultLanguageIndex].text.trim();
+                          final String fallbackDescription = _descriptionControllerList[_defaultLanguageIndex].text.trim();
+
                           translations.add(Translation(
-                            locale: _languageList[index].key, key: 'name',
-                            value: _nameControllerList[index].text.trim().isNotEmpty ? _nameControllerList[index].text.trim() : _nameControllerList[0].text.trim(),
+                            locale: _languageList[index].key,
+                            key: 'name',
+                            value: _nameControllerList[index].text.trim().isNotEmpty
+                                ? _nameControllerList[index].text.trim()
+                                : fallbackName,
                           ));
                           translations.add(Translation(
-                            locale: _languageList[index].key, key: 'description',
-                            value: _descriptionControllerList[index].text.trim().isNotEmpty ? _descriptionControllerList[index].text.trim() : _descriptionControllerList[0].text.trim(),
+                            locale: _languageList[index].key,
+                            key: 'description',
+                            value: _descriptionControllerList[index].text.trim().isNotEmpty
+                                ? _descriptionControllerList[index].text.trim()
+                                : fallbackDescription,
                           ));
                         }
 
