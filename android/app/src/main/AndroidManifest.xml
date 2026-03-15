@@ -38,7 +38,7 @@
         </queries>
 
         <application
-            android:label="Siame Shop"
+            android:label="Siame Store"
             android:name="${applicationName}"
             android:extractNativeLibs="true"
             android:requestLegacyExternalStorage="true"
