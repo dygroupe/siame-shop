@@ -67,6 +67,7 @@ class _AddItemScreenState extends State<AddItemScreen> with TickerProviderStateM
   late bool _update;
   late Item _item;
   bool _hasDiscount = false;
+  int _weightTypeIndex = 0;
 
   final Module? _module = Get.find<SplashController>().configModel!.moduleConfig!.module;
   final isPharmacy = Get.find<ProfileController>().profileModel!.stores![0].module!.moduleType == 'pharmacy';
@@ -152,6 +153,7 @@ class _AddItemScreenState extends State<AddItemScreen> with TickerProviderStateM
       _maxOrderQuantityController.text = _item.maxOrderQuantity.toString();
       _genericNameSuggestionController.text = (_item.genericName != null && _item.genericName!.isNotEmpty) ? _item.genericName![0]! : '';
       storeController.setDiscountTypeIndex(_item.discountType == 'percent' ? 0 : 1, false);
+      _weightTypeIndex = (_item.weightType == 1) ? 1 : 0;
       storeController.setVeg(_item.veg == 1, false);
       storeController.initSetup();
       storeController.removeImageFromList();
@@ -298,6 +300,17 @@ class _AddItemScreenState extends State<AddItemScreen> with TickerProviderStateM
                   )));
                 }
               }
+
+              List<DropdownItem<int>> weightTypeList = [
+                DropdownItem<int>(value: 0, child: Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: Text('weight_type_light'.tr),
+                )),
+                DropdownItem<int>(value: 1, child: Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: Text('weight_type_heavy'.tr),
+                )),
+              ];
 
               List<DropdownItem<int>> discountTypeList = [];
               for(int i=0; i<storeController.discountTypeList.length; i++) {
@@ -1316,6 +1329,59 @@ class _AddItemScreenState extends State<AddItemScreen> with TickerProviderStateM
 
                           ]) : const SizedBox(),
 
+                        const SizedBox(height: Dimensions.paddingSizeExtraLarge),
+
+                        LabelWidget(
+                          labelText: 'weight_type'.tr,
+                          labelStyle: robotoBold.copyWith(
+                            fontSize: Dimensions.fontSizeLarge,
+                            color: Theme.of(context).disabledColor,
+                          ),
+                          child: Padding(
+                            padding: const EdgeInsets.only(top: Dimensions.paddingSizeSmall),
+                            child: Row(children: [
+                              Expanded(
+                                child: Container(
+                                  decoration: BoxDecoration(
+                                    borderRadius: BorderRadius.circular(Dimensions.radiusDefault),
+                                    color: Theme.of(context).cardColor,
+                                    border: Border.all(color: Theme.of(context).disabledColor.withValues(alpha: 0.5)),
+                                  ),
+                                  child: CustomDropdown(
+                                    onChange: (int? value, int index) {
+                                      setState(() {
+                                        _weightTypeIndex = value ?? 0;
+                                      });
+                                    },
+                                    dropdownButtonStyle: DropdownButtonStyle(
+                                      height: 45,
+                                      padding: const EdgeInsets.symmetric(
+                                        vertical: Dimensions.paddingSizeExtraSmall,
+                                        horizontal: Dimensions.paddingSizeExtraSmall,
+                                      ),
+                                      primaryColor: Theme.of(context).textTheme.bodyLarge!.color,
+                                    ),
+                                    iconColor: Theme.of(context).disabledColor,
+                                    dropdownStyle: DropdownStyle(
+                                      elevation: 10,
+                                      borderRadius: BorderRadius.circular(Dimensions.radiusDefault),
+                                      padding: const EdgeInsets.all(Dimensions.paddingSizeExtraSmall),
+                                    ),
+                                    items: weightTypeList,
+                                    child: Padding(
+                                      padding: const EdgeInsets.only(left: 8),
+                                      child: Text(
+                                        _weightTypeIndex == 1 ? 'weight_type_heavy'.tr : 'weight_type_light'.tr,
+                                        style: robotoRegular.copyWith(color: Theme.of(context).disabledColor, fontSize: Dimensions.fontSizeLarge),
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                              ),
+                            ]),
+                          ),
+                        ),
+
                       ]),
                     ),
                     const SizedBox(height: Dimensions.paddingSizeDefault),
@@ -1887,6 +1953,7 @@ class _AddItemScreenState extends State<AddItemScreen> with TickerProviderStateM
                             _item.categoryIds!.removeAt(1);
                           }
                         }
+                        _item.weightType = _weightTypeIndex;
                         _item.addOns = [];
                         for (var index in storeController.selectedAddons!) {
                           _item.addOns!.add(Get.find<AddonController>().addonList![index]);

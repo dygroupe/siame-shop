@@ -142,6 +142,7 @@ class StoreRepository implements StoreRepositoryInterface {
       'price': item.price.toString(), 'discount': item.discount.toString(), 'veg': item.veg.toString(),
       'discount_type': item.discountType!, 'category_id': item.categoryIds![0].id!,
       'translations': jsonEncode(item.translations), 'tags': tags, 'maximum_cart_quantity': item.maxOrderQuantity.toString(),
+      'weight_type': (item.weightType ?? 0).toString(),
     });
 
     if(Get.find<ProfileController>().profileModel!.stores![0].module!.moduleType == 'grocery' || Get.find<ProfileController>().profileModel!.stores![0].module!.moduleType == 'food') {

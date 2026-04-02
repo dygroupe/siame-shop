@@ -238,6 +238,11 @@ class EnglishLanguageItemTab extends StatelessWidget {
                 value: item.unitType!,
               ) : const SizedBox(),
 
+              item.weightType != null ? InformationTextWidget(
+                title: 'weight_type'.tr,
+                value: item.weightType == 1 ? 'weight_type_heavy'.tr : 'weight_type_light'.tr,
+              ) : const SizedBox(),
+
               InformationTextWidget(
                 title: storeController.isFoodModule() ? 'item_type'.tr : 'is_organic'.tr,
                 value: storeController.isFoodModule() ? item.veg == 1 ? 'veg'.tr : 'non_veg'.tr : item.veg == 1 ? 'yes'.tr : 'no'.tr,

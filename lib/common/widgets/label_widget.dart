@@ -6,7 +6,8 @@ class LabelWidget extends StatelessWidget {
   final String labelText;
   final Widget child;
   final EdgeInsetsGeometry? padding;
-  const LabelWidget({super.key, required this.labelText, required this.child, this.padding});
+  final TextStyle? labelStyle;
+  const LabelWidget({super.key, required this.labelText, required this.child, this.padding, this.labelStyle});
 
   @override
   Widget build(BuildContext context) {
@@ -26,7 +27,10 @@ class LabelWidget extends StatelessWidget {
         child: Container(
           decoration: BoxDecoration(color: Theme.of(context).cardColor),
           padding: const EdgeInsets.all(5),
-          child: Text(labelText, style: robotoRegular.copyWith(color: Theme.of(context).disabledColor, fontSize: Dimensions.fontSizeSmall)),
+          child: Text(
+            labelText,
+            style: labelStyle ?? robotoRegular.copyWith(color: Theme.of(context).disabledColor, fontSize: Dimensions.fontSizeSmall),
+          ),
         ),
       ),
 

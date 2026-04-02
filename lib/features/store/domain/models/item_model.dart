@@ -79,6 +79,8 @@ class Item {
   int? ratingCount;
   int? veg;
   String? unitType;
+  /// 0 = light, 1 = heavy; API field `weight_type`.
+  int? weightType;
   int? stock;
   List<Translation>? translations;
   List<Tag>? tags;
@@ -134,6 +136,7 @@ class Item {
     this.ratingCount,
     this.veg,
     this.unitType,
+    this.weightType,
     this.stock,
     this.translations,
     this.tags,
@@ -224,6 +227,7 @@ class Item {
     ratingCount = json['rating_count'];
     veg = json['veg'];
     unitType = json['unit_type'];
+    weightType = json['weight_type'] != null ? int.parse(json['weight_type'].toString()) : null;
     stock = json['stock'];
     if (json['translations'] != null && json['translations'].isNotEmpty) {
       translations = [];
@@ -342,6 +346,7 @@ class Item {
     data['rating_count'] = ratingCount;
     data['veg'] = veg;
     data['unit_type'] = unitType;
+    data['weight_type'] = weightType;
     data['stock'] = stock;
     if (translations != null) {
       data['translations'] = translations!.map((v) => v.toJson()).toList();
