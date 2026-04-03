@@ -1027,6 +1027,7 @@
   "max_30" : "Máximo: 30",
   "select_an_option" : "Selecciona una opción",
   "please_select_an_option" : "Por favor, selecciona una opción",
+  "please_select_weight_type_option" : "Por favor, selecciona una opción para el tipo de peso",
   "provider_active_time" : "Hora Activa del Proveedor",
   "business_logo" : "Logo del Negocio",
   "image_format_and_ratio_for_logo" : "JPG, JPEG, PNG Menor a 1MB (Proporción 1:1)",

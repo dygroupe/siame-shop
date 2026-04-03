@@ -1027,6 +1027,7 @@
   "max_30" : "ম্যাক্সিমাম: 30",
   "select_an_option" : "একটি পাত্র নির্বাচন করুন",
   "please_select_an_option" : "ক্ষমা করে একটি পাত্র নির্বাচন করুন",
+  "please_select_weight_type_option" : "ওজনের ধরন জন্য একটি অপশন নির্বাচন করুন",
   "provider_active_time" : "প্রোভাইডার অ্যাক্টিভ টাইম",
   "business_logo" : "বিজনেস লোগো",
   "image_format_and_ratio_for_logo" : "JPG, JPEG, PNG 1MB এর কম (Ratio 1:1)",

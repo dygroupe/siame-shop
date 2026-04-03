@@ -67,7 +67,7 @@ class _AddItemScreenState extends State<AddItemScreen> with TickerProviderStateM
   late bool _update;
   late Item _item;
   bool _hasDiscount = false;
-  int _weightTypeIndex = 0;
+  int? _weightTypeIndex;
 
   final Module? _module = Get.find<SplashController>().configModel!.moduleConfig!.module;
   final isPharmacy = Get.find<ProfileController>().profileModel!.stores![0].module!.moduleType == 'pharmacy';
@@ -1350,7 +1350,7 @@ class _AddItemScreenState extends State<AddItemScreen> with TickerProviderStateM
                                   child: CustomDropdown(
                                     onChange: (int? value, int index) {
                                       setState(() {
-                                        _weightTypeIndex = value ?? 0;
+                                        _weightTypeIndex = value;
                                       });
                                     },
                                     dropdownButtonStyle: DropdownButtonStyle(
@@ -1371,7 +1371,7 @@ class _AddItemScreenState extends State<AddItemScreen> with TickerProviderStateM
                                     child: Padding(
                                       padding: const EdgeInsets.only(left: 8),
                                       child: Text(
-                                        _weightTypeIndex == 1 ? 'weight_type_heavy'.tr : 'weight_type_light'.tr,
+                                        _weightTypeIndex == null ? 'select_an_option'.tr : _weightTypeIndex == 1 ? 'weight_type_heavy'.tr : 'weight_type_light'.tr,
                                         style: robotoRegular.copyWith(color: Theme.of(context).disabledColor, fontSize: Dimensions.fontSizeLarge),
                                       ),
                                     ),
@@ -1919,6 +1919,8 @@ class _AddItemScreenState extends State<AddItemScreen> with TickerProviderStateM
                         showCustomSnackBar('enter_stock'.tr);
                       }else if(_module.unit! && (storeController.unitIndex == null)) {
                         showCustomSnackBar('add_an_unit'.tr);
+                      }else if(!_update && _weightTypeIndex == null) {
+                        showCustomSnackBar('please_select_weight_type_option'.tr);
                       }else if(maxOrderQuantity < 0) {
                         showCustomSnackBar('maximum_item_order_quantity_can_not_be_negative'.tr);
                       }else if(_module.itemAvailableTime! && storeController.availableTimeStarts == null) {
@@ -1953,7 +1955,7 @@ class _AddItemScreenState extends State<AddItemScreen> with TickerProviderStateM
                             _item.categoryIds!.removeAt(1);
                           }
                         }
-                        _item.weightType = _weightTypeIndex;
+                        _item.weightType = _weightTypeIndex ?? 0;
                         _item.addOns = [];
                         for (var index in storeController.selectedAddons!) {
                           _item.addOns!.add(Get.find<AddonController>().addonList![index]);
