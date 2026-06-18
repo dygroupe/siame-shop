@@ -35,6 +35,34 @@
                 <action android:name="android.intent.action.SEND" />
                 <data android:mimeType="*/*" />
             </intent>
+            <intent>
+                <action android:name="android.intent.action.VIEW" />
+                <data android:scheme="wave" />
+            </intent>
+            <intent>
+                <action android:name="android.intent.action.VIEW" />
+                <data android:scheme="orangemoney" />
+            </intent>
+            <intent>
+                <action android:name="android.intent.action.VIEW" />
+                <data android:scheme="orange-money" />
+            </intent>
+            <intent>
+                <action android:name="android.intent.action.VIEW" />
+                <data android:scheme="com.orange.orangemoney" />
+            </intent>
+            <intent>
+                <action android:name="android.intent.action.VIEW" />
+                <data android:scheme="com.orange.maxit" />
+            </intent>
+            <intent>
+                <action android:name="android.intent.action.VIEW" />
+                <data android:scheme="com.orange.myorange.osn" />
+            </intent>
+            <package android:name="com.wave.personal" />
+            <package android:name="com.orange.orangemoney" />
+            <package android:name="com.orange.maxit" />
+            <package android:name="com.orange.myorange.osn" />
         </queries>
 
         <application

@@ -68,6 +68,15 @@
 		<string>UIInterfaceOrientationLandscapeLeft</string>
 		<string>UIInterfaceOrientationLandscapeRight</string>
 	</array>
+	<key>LSApplicationQueriesSchemes</key>
+	<array>
+		<string>wave</string>
+		<string>orangemoney</string>
+		<string>orange-money</string>
+		<string>com.orange.orangemoney</string>
+		<string>com.orange.maxit</string>
+		<string>com.orange.myorange.osn</string>
+	</array>
 	<key>UIViewControllerBasedStatusBarAppearance</key>
 	<false/>
 </dict>
