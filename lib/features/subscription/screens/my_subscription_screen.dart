@@ -123,9 +123,9 @@ class _MySubscriptionScreenState extends State<MySubscriptionScreen> with Ticker
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
                           Text(
-                            '${Get.find<ProfileController>().profileModel != null && Get.find<ProfileController>().profileModel!.stores?[0].comission != null && Get.find<ProfileController>().profileModel!.stores![0].comission! > 0
-                                ? Get.find<ProfileController>().profileModel!.stores![0].comission!
-                                :  Get.find<SplashController>().configModel?.adminCommission} %',
+                            Get.find<ProfileController>().profileModel != null && Get.find<ProfileController>().profileModel!.stores?[0].comission != null && Get.find<ProfileController>().profileModel!.stores![0].comission! > 0
+                                ? '${Get.find<ProfileController>().profileModel!.stores![0].comission!} %'
+                                : '6% - ${Get.find<SplashController>().configModel?.adminCommission}%',
                             style: robotoBold.copyWith(color: Colors.teal, fontSize: 24),
                           ),
                           const SizedBox(width: Dimensions.paddingSizeSmall),
@@ -140,7 +140,7 @@ class _MySubscriptionScreenState extends State<MySubscriptionScreen> with Ticker
                     const SizedBox(height: Dimensions.paddingSizeDefault),
 
                     Text(
-                      "${'vendor_will_pay'.tr} ${Get.find<SplashController>().configModel!.adminCommission}% ${'commission_to'.tr} ${Get.find<SplashController>().configModel!.businessName} ${'from_each_order_You_will_get_access_of_all'.tr}",
+                      "${'vendor_will_pay'.tr} ${'a_dynamic_commission'.tr} ${Get.find<SplashController>().configModel!.businessName} ${'from_each_order_You_will_get_access_of_all'.tr}",
                       style: robotoRegular.copyWith(fontSize: Dimensions.fontSizeSmall, color: Theme.of(context).textTheme.bodyLarge?.color?.withValues(alpha: 0.7), height: 2), textAlign: TextAlign.start,
                     )
 

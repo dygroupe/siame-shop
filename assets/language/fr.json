@@ -996,11 +996,10 @@
   "Approved": "Approuvé",
   "Denied": "Refusé",
   "Pending": "En attente",
-
-  "provider_temporary_off" : "Boutique temporairement fermée",
-  "trip_id" : "ID de trajet",
-  "estimated" : "Estimé",
-  "trip_history" : "Historique des trajets",
+  "provider_temporary_off": "Boutique temporairement fermée",
+  "trip_id": "ID de trajet",
+  "estimated": "Estimé",
+  "trip_history": "Historique des trajets",
   "home": "Accueil",
   "trips": "Trajets",
   "menu": "Menu",
@@ -1303,7 +1302,6 @@
   "coupon_status_updated": "Statut du coupon mis à jour",
   "vehicle_upload": "Import de véhicules",
   "you_cannot_select_before_current_time": "Vous ne pouvez pas sélectionner une heure antérieure à maintenant",
-
   "notification_is_disabled_please_allow_notification": "Les notifications sont désactivées. Veuillez les autoriser",
   "for_better_performance_allow_notification_to_run_in_background": "Pour de meilleures performances, autorisez les notifications en arrière-plan",
   "system_notification": "Notification système",
@@ -1317,7 +1315,6 @@
   "notification_will_always_send_alert_from_the_background": "Les notifications enverront toujours des alertes en arrière-plan",
   "notification_will_not_always_send_alert_from_the_background": "Les notifications n’enverront pas toujours des alertes en arrière-plan",
   "make_sure_to_enable_app_notifications_first": "Assurez-vous d’abord d’activer les notifications de l’application",
-
   "per_day": "Par jour",
   "enter_per_day_price": "Saisir le prix journalier",
   "reports": "Rapports",
@@ -1365,7 +1362,6 @@
   "reject_note": "Motif de refus",
   "vat_tax_inc": "(TVA incl.)",
   "orders": "Commandes",
-
   "item_found": "Article trouvé",
   "discount_will_be_applicable_when_order_amount_exceeds_is_more_than": "La réduction s’appliquera quand le montant de la commande dépasse",
   "max": "Max",
@@ -1408,7 +1404,6 @@
   "enter_minimum_delivery_charge": "Saisir les frais de livraison minimum",
   "enter_maximum_delivery_charge_more_than_0": "Saisir les frais de livraison maximum (supérieur à 0)",
   "restaurant_config": "Configuration boutique",
-
   "item_name_required": "Nom de l’article obligatoire",
   "generating": "Génération en cours",
   "hi_there": "Salut !",
@@ -1468,5 +1463,6 @@
   "email_can_not_be_edited": "L’e-mail ne peut pas être modifié",
   "if_you_enable_this_option": "Si vous activez cette option, ",
   "the_restaurant_will_be_marked_as_temporary_closed": "la boutique sera marquée comme temporairement fermée.",
-  "the_store_will_be_marked_as_temporary_closed": "la boutique sera marquée comme temporairement fermée."
+  "the_store_will_be_marked_as_temporary_closed": "la boutique sera marquée comme temporairement fermée.",
+  "a_dynamic_commission": "une commission dynamique à"
 }

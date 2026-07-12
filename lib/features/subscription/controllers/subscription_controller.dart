@@ -218,7 +218,7 @@ class SubscriptionController extends GetxController implements GetxService {
         id: -1,
         packageName: 'commission_base'.tr,
         price: Get.find<SplashController>().configModel!.adminCommission,
-        description: "${'vendor_will_pay'.tr} ${Get.find<SplashController>().configModel!.adminCommission}% ${'commission_to'.tr} ${Get.find<SplashController>().configModel!.businessName} ${'from_each_order_You_will_get_access_of_all'.tr}",
+        description: "${'vendor_will_pay'.tr} ${'a_dynamic_commission'.tr} ${Get.find<SplashController>().configModel!.businessName} ${'from_each_order_You_will_get_access_of_all'.tr}",
       ));
     }
     for (var package in Get.find<AuthController>().packageModel!.packages!) {
