@@ -46,7 +46,7 @@ class PaymentScreenState extends State<PaymentScreen> {
     if(!GetPlatform.isIOS){
       await InAppWebViewController.setWebContentsDebuggingEnabled(kDebugMode);
 
-      bool swAvailable = await WebViewFeature.isFeatureSupported(WebViewFeature.SERVICE_WORKER_BASIC_USING);
+      bool swAvailable = await WebViewFeature.isFeatureSupported(WebViewFeature.SERVICE_WORKER_BASIC_USAGE);
       bool swInterceptAvailable = await WebViewFeature.isFeatureSupported(WebViewFeature.SERVICE_WORKER_SHOULD_INTERCEPT_REQUEST);
 
       if (swAvailable && swInterceptAvailable) {
@@ -114,7 +114,7 @@ class MyInAppBrowser extends InAppBrowser {
   final int? packageId;
   MyInAppBrowser({super.windowId, super.initialUserScripts, this.redirectUrl, this.storeId, this.isSubscriptionPayment, this.packageId});
 
-  final bool _canRedirect = true;
+  bool _canRedirect = true;
 
   /// Ouvre une URL externe (Wave, Max It, Orange Money) et gère les fallbacks
   Future<void> _openExternalUrl(String raw) async {
